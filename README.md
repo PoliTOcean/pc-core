@@ -1,1 +1,3 @@
-# pc core
+# pc-core
+
+Control station software
