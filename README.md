@@ -1,7 +1,8 @@
 # pc-core
 
-Per far funzionare i pacchetti, è necessario importare l'intera cartella "politocean" dentro "scripts", nel workspace di ROS.
+Per far funzionare i pacchetti, è necessario importare l'intera cartella "politocean" dentro "src", nel workspace di ROS.
 Successivamente bisogna lanciare il comando "catkin_make" all'interno della cartella principale del workspace.
+
 Fatto ciò, si può tranquillamente usare la piattaforma lanciando i comandi:
 
 rosrun politocean mainGUI.py -> per avviare l'interfaccia grafica
