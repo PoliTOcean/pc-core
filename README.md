@@ -1,6 +1,6 @@
 # pc-core
 
-<<<<<<< HEAD
+HEAD
 Control station software
 =======
 Per far funzionare i pacchetti, è necessario importare l'intera cartella "politocean" dentro "src", nel workspace di ROS.
@@ -13,4 +13,4 @@ rosrun politocean mainGUI.py -> per avviare l'interfaccia grafica
 rosrun politocean mainROV.py -> per avviare il nodo che dovrà girare sul ROV
 
 Questi due script farannno partire tutti i nodi necessari alla loro corretta esecuzione, così come saranno loro a fermarli una volta chiuso il programma.
->>>>>>>
+
