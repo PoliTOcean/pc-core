@@ -1,0 +1,9 @@
+I file GUI.sh e ROV.sh non sono più necessari.
+I nodi vanno fatti partire con:
+rosrun politocean mainGUI.py
+rosrun politocean mainROV.py
+
+Loro poi faranno partire (e uccideranno) gli altri nodi necessari.
+
+Inoltre si consiglia di fare un catkin_make per aggiornare i msg.
+Sono state aggiunte delle costanti.
