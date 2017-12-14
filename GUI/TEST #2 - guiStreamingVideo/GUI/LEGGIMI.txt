@@ -1,5 +1,0 @@
-ISTRUZIONI PER USARE 
-
--utilizzare il package politocean e far partire il video_stream.launch (leggere guida su dropbox)
--copiare in una cartella sul desktop tutti i file presenti e digitare il comando python gui.py
--> ENJOY YOUR SELF 
