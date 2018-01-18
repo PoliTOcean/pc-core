@@ -4,117 +4,177 @@ this node is responsible to get data from a joystick and send them
 over the 'joystick' topic. It runs in parallel with joystick_checker, which
 tells him the state of the joystick. If it has been disabled, it sops sending
 data until it has been re-attached. '''
-import roslib
 import rospy
 from politocean.msg import *
-import pygame
-from pygame import locals
-from std_msgs.msg import String
-from time import sleep
-import timeit
+import os, struct, array
+from fcntl import ioctl
+import time
 from errmess_publisher import *
 
 #set the name of the node
 rospy.init_node(NODE.JOYPUB, anonymous=False)
 
-#variable check
-check = False
+#check inout devices and initialize the joystick
+def joy_init():
+    # wait for available devices
+    while True:
+        if any(fn.startswith('js') for fn in os.listdir('/dev/input')):
+            break
+    time.sleep(1)
+    
+    publishComponent(NODE.JOYCHK, ID.JOYSTICK, STATUS.ENABLED)
 
-#when it receives something over components topic
-def checkComponent(data):
-    global check
-    if not data.ID==ID.JOYSTICK: #if it's not about the joystick
-        return  #exit
-    if data.status == STATUS.DISABLED: #if it's disabled
-        check = False #set check to False
-    elif data.status == STATUS.REQUEST: #if it's a request
-        if check: #check if it's enabled
-            publishComponent(NODE.JOYPUB, ID.JOYSTICK, STATUS.ENABLED)
+    # We'll store the states here.
+    axis_states = {}
+    button_states = {}
 
-#subscriber
-comp_sub = rospy.Subscriber('components', component_data, checkComponent)
+    # mappng of the joystick axis and buttons
+    axis_names = {
+        0x00 : 'x',
+        0x01 : 'y',
+        0x02 : 'z',
+        0x03 : 'rx',
+        0x04 : 'ry',
+        0x05 : 'rz',
+        0x06 : 'trottle',
+        0x10 : 'x_pad',
+        0x11 : 'y_pad',
+        0x28 : 'y_mouse',
+        0x29 : 'x_mouse',
+    }
 
-#init the joystick
-def joystick_init():
-    global check
-    j = None;
-    #init pygame
-    pygame.init()
-    pygame.joystick.init() # main joystick device system init
-    while not rospy.is_shutdown() and pygame.joystick.get_count()<=0: #loop until it finds a joystick
-        pygame.joystick.quit() # main joystick device system quit
-        sleep(0.5)
-        pygame.joystick.init() # main joystick device system init
+    button_names = {
+        0x000 : 'wheel',
+        0x120 : 'trigger',
+        0x121 : 'thumb',
+        0x122 : 'thumb2',
+        0x123 : 'top',
+        0x124 : 'c_butt',
+        0x125 : 'pinkie',
+        0x126 : 'd_butt',
+        0x127 : 'e_butt',
+        0x128 : 'base1',
+        0x129 : 'base2',
+        0x12a : 'base3',
+        0x12b : 'base4',
+        0x12c : 'base5',
+        0x12d : 'base6',
+        0x12e : 'trigger2',
+        
+        0x12f : 'cpad_up',
+        0x2c0 : 'cpad_right',
+        0x2c1 : 'cpad_down',
+        0x2c2 : 'cpad_left',
+        
+        0x2c3 : 'back_up',
+        0x2c4 : 'back_right',
+        0x2c5 : 'back_down',
+        0x2c6 : 'back_left',
+        
+        0x2c7 : 'mode_1',
+        0x2c8 : 'mode_2',
+        0x2c9 : 'mode_3',
+        
+        0x2ca : 'function',
+        0x2cb : 'start-stop',
+        0x2cc : 'reset',
+        0x2cd : 'i_butt',
+        0x2ce : 'mouse_butt',
+        0x2cf : 'wheel_butt',
+    }
 
-    #joystick init
-    try:
-        j = pygame.joystick.Joystick(0)
-        j.init()
-        check = True #flag to say that it's enabled
-        #publish enabled status
-        publishComponent(NODE.JOYPUB, ID.JOYSTICK, STATUS.ENABLED)
-        #send a message over 'messages' topic
-        publishMessages(NODE.JOYPUB, "JOYSTICK: \""+str(j.get_name())+"\" enabled.")
-    except:
-        pass
-    return j
+    axis_map = []
+    button_map = []
+
+    # Open the joystick device.
+    fn = '/dev/input/js0'
+    publishMessages(NODE.JOYPUB, 'Opening %s...' % fn)
+    jsdev = open(fn, 'rb')
+
+    # Get the device name.
+    buf = array.array('c', ['\0'] * 64)
+    ioctl(jsdev, 0x80006a13 + (0x10000 * len(buf)), buf) # JSIOCGNAME(len)
+    publishMessages(NODE.JOYPUB, 'Device name: %s' % buf.tostring().strip('\0'))
+
+    # Get number of axes and buttons.
+    buf = array.array('B', [0])
+    ioctl(jsdev, 0x80016a11, buf) # JSIOCGAXES
+    num_axes = buf[0]
+
+    buf = array.array('B', [0])
+    ioctl(jsdev, 0x80016a12, buf) # JSIOCGBUTTONS
+    num_buttons = buf[0]
+
+    # Get the axis map.
+    buf = array.array('B', [0] * 0x40)
+    ioctl(jsdev, 0x80406a32, buf) # JSIOCGAXMAP
+
+    for axis in buf[:num_axes]:
+        axis_name = axis_names.get(axis, 'unknown(0x%02x)' % axis)
+        axis_map.append(axis_name)
+        axis_states[axis_name] = 0.0
+
+    # Get the button map.
+    buf = array.array('H', [0] * 200)
+    ioctl(jsdev, 0x80406a34, buf) # JSIOCGBTNMAP
+
+    for btn in buf[:num_buttons]:
+        btn_name = button_names.get(btn, 'unknown(0x%03x)' % btn)
+        button_map.append(btn_name)
+        button_states[btn_name] = 0
+
+    return jsdev, button_map, button_states, axis_map, axis_states
 
 #publish joystick data
-def joystick_publisher(j):
+def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
     #set joystick publisher
-    pub = rospy.Publisher('joystick', joystick_data, queue_size=0)
-    #set ros rate
-    rate = rospy.Rate(10) # 10hz
+    pub = rospy.Publisher('joystick', joystick_event, queue_size=0)
+
     #prepare variable that has to be sent
-    command = joystick_data()
-    global check
+    command = joystick_event()
     #loop until ros is active
-    cont = 0
     while not rospy.is_shutdown():
-        cont+=1 #counter for the joystick subscriber (see joystick subscriber for info)
-        if cont >= 100:
-            cont=0
-        #save all data
-        command.check=cont
-        command.left=j.get_button(0)
-        command.up=j.get_button(1)
-        command.down=j.get_button(2)
-        command.right=j.get_button(3)
-        command.l1=j.get_button(4)
-        command.l2=j.get_button(5)
-        command.r1=j.get_button(6)
-        command.r2=j.get_button(7)
-        command.select=j.get_button(8)
-        command.start=j.get_button(9)
-        command.l3=j.get_button(10)
-        command.r3=j.get_button(11)
-        command.lx=int(round((j.get_axis(0))*100))
-        command.ly=int(round((j.get_axis(1))*100))
-        command.ry=int(round((j.get_axis(2))*100))
-        command.rx=int(round((j.get_axis(3))*100))
+
+        try: # if the joystick is connected
+            evbuf = jsdev.read(8)
+
+            if evbuf:
+                jtime, value, type, number = struct.unpack('IhBB', evbuf)
+                
+                # button events
+                if type & 0x01:
+                    button = button_map[number]
+                    if button:
+                        button_states[button] = value
+                        command.ID = button
+                        command.status = value
+                
+                # axis events
+                if type & 0x02:
+                    axis = axis_map[number]
+                    if axis:
+                        fvalue = value / 32767.0
+                        axis_states[axis] = fvalue
+                        command.ID = axis
+                        command.status = fvalue
+                        
+        except IOError: # if the joystick is disconnected
+            publishMessages(NODE.JOYPUB, "Joystick has been disconnected.")
+            publishComponent(NODE.JOYCHK, ID.JOYSTICK, STATUS.DISABLED)
+            
+            jsdev, button_map, button_state, axis_map, axis_state = joy_init()
+            
+            publishMessages(NODE.JOYPUB, "Joystick reconnected.")
+
         try:
             pub.publish(command) #send data over the topic
+            
         except rospy.ROSInterruptException as e:
             publishErrors(NODE.JOYPUB, "Joystick publisher error: "+str(e))
-        rate.sleep()
-        pygame.event.clear() #clear events
-        if not check: #if check hasn't change
-            j.quit() #quit
-            #send a message
-            publishMessages(NODE.JOYPUB, "Joystick has been disconnected.")
-            while not rospy.is_shutdown(): #and loop until it has been reconnected
-                try:
-                    j.init()
-                    break
-                except:
-                    sleep(1)
-            #publish messages and status
-            publishMessages(NODE.JOYPUB, "Joystick reconnected.")
-            check = True #set flag to True
-            publishComponent(NODE.JOYPUB, ID.JOYSTICK, STATUS.ENABLED)
+
 
 if __name__ == '__main__':
     errMessInit() #init topics
 
-    j = joystick_init()
-    joystick_publisher(j)
+    jsdev, button_map, button_state, axis_map, axis_state = joy_init()
+    joystick_publisher(jsdev, button_map, button_state, axis_map, axis_state)

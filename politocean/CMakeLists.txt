@@ -51,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    joystick_data.msg
+   joystick_event.msg
    sensors_data.msg
    component_data.msg
    ID.msg

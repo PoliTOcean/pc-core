@@ -26,7 +26,6 @@ rospy.init_node(NODE.GUI, anonymous=False)
 
 def exit(n):
     #when it will be closed, kill other nodes and exit
-    os.system("rosnode kill "+NODE.JOYCHK)
     os.system("rosnode kill "+NODE.JOYPUB)
     os.system("rosnode kill "+NODE.GUI)
     sys.exit(n)
@@ -47,7 +46,6 @@ def checkRovAwakeness(window, rov):
 
 #function to init ROV and send commands
 def initAndSend(window, rov):
-    os.system("rosrun politocean joystick_checker.py &")
     os.system("rosrun politocean joystick_publisher.py &")
 
     #active "commands" topic
