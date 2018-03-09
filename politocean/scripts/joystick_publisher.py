@@ -128,10 +128,13 @@ def joy_init():
 #publish joystick data
 def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
     #set joystick publisher
-    pub = rospy.Publisher('joystick', joystick_event, queue_size=0)
+    pub_axis = rospy.Publisher('joystick_axis', joystick_axis, queue_size=0)
+    pub_butt = rospy.Publisher('joystick_buttons', joystick_buttons, queue_size=0)
 
     #prepare variable that has to be sent
-    command = joystick_event()
+    axis_command = joystick_axis()
+    butt_command = joystick_buttons()
+    
     #loop until ros is active
     while not rospy.is_shutdown():
 
@@ -146,8 +149,14 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
                     button = button_map[number]
                     if button:
                         button_states[button] = value
-                        command.ID = button
-                        command.status = value
+                        butt_command.ID = button
+                        butt_command.status = value
+                        
+                        try:
+                            pub_butt.publish(butt_command) #send data over the topic
+                            
+                        except rospy.ROSInterruptException as e:
+                            publishErrors(NODE.JOYPUB, "Joystick publisher error: "+str(e))
                 
                 # axis events
                 if type & 0x02:
@@ -155,8 +164,14 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
                     if axis:
                         fvalue = value / 32767.0
                         axis_states[axis] = fvalue
-                        command.ID = axis
-                        command.status = fvalue
+                        axis_command.ID = axis
+                        axis_command.status = fvalue
+                        
+                        try:
+                            pub_axis.publish(axis_command) #send data over the topic
+                            
+                        except rospy.ROSInterruptException as e:
+                            publishErrors(NODE.JOYPUB, "Joystick publisher error: "+str(e))
                         
         except IOError: # if the joystick is disconnected
             publishMessages(NODE.JOYPUB, "Joystick has been disconnected.")
@@ -165,12 +180,6 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
             jsdev, button_map, button_state, axis_map, axis_state = joy_init()
             
             publishMessages(NODE.JOYPUB, "Joystick reconnected.")
-
-        try:
-            pub.publish(command) #send data over the topic
-            
-        except rospy.ROSInterruptException as e:
-            publishErrors(NODE.JOYPUB, "Joystick publisher error: "+str(e))
 
 
 if __name__ == '__main__':
