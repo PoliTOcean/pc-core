@@ -30,19 +30,6 @@ def exit(n):
     os.system("rosnode kill "+NODE.GUI)
     sys.exit(n)
 
-#function to check if the ROV is awake
-def checkRovAwakeness(window, rov):
-    #check ROV
-    while not rospy.is_shutdown():
-        sleep(0.5)
-        tic = timeit.default_timer()
-        while not rospy.is_shutdown() and not rov.isAwake(): #if it's not awake
-            sleep(0.1)
-            if timeit.default_timer()-tic >= 5: #after a bit
-                tic = timeit.default_timer()
-                publishErrors(NODE.GUI, "ROV is not responding") #print on console
-                publishComponent(NODE.GUI, ID.ATMEGA, STATUS.DISABLED) #publish ATMega status
-            sleep(0.1)
 
 #function to init ROV and send commands
 def initAndSend(window, rov):
@@ -53,19 +40,18 @@ def initAndSend(window, rov):
         rov.sendCommand("W")
         sleep(0.3)
 
-    #start a new thread to check ROV
-    try:
-        thread.start_new_thread(checkRovAwakeness, (window, rov, ))
-    except:
-        print("Unable to start checkRovAwakeness thread. Exit")
-        exit(-2)
-
-    #send commands
+    #while to check if the ROV is awake, as well as tell the ROV that GUI is awake
     while not rospy.is_shutdown():
-        comm = window.getCommands() #get commands from console
-        if comm!="":
-            rov.sendCommand(comm)   #send commands to ROV
-        sleep(0.1)
+        sleep(0.5)
+        tic = timeit.default_timer()
+        rov.sendCommand("A");   #tell the ROV that GUI is awake
+        while not rospy.is_shutdown() and not rov.isAwake(): #if it's not awake
+            sleep(0.1)
+            if timeit.default_timer()-tic >= 5: #after a bit
+                tic = timeit.default_timer()
+                publishErrors(NODE.GUI, "ROV is not responding") #print on console
+                publishComponent(NODE.GUI, ID.ATMEGA, STATUS.DISABLED) #publish ATMega status
+            sleep(0.1)
 
 def main():
     app = QtGui.QApplication(sys.argv) #gui app init

@@ -19,10 +19,14 @@ form_class = uic.loadUiType(PATH_ROS+"/politocean/scripts/gui/simple.ui")[0]
 #main window class
 class Window(QtGui.QMainWindow,form_class):
 	#init of Main Window
+
     def __init__(self,parent=None):
         QtGui.QMainWindow.__init__(self, parent)
         self.setupUi(self)
         self.setWindowTitle('PoliTOcean')
+
+        #we need this variable to send commands from here
+        self.rov = None
 
         #bridge for image converting
         self.bridge = CvBridge()
@@ -77,9 +81,6 @@ class Window(QtGui.QMainWindow,form_class):
         #set default cam indexes
         self.cam = [0, 1, 2]
 
-        #it will be needed for the console
-        self.command = ""
-
         #flag
         self.altPressed = False
         self.cmdFocus = False
@@ -102,6 +103,10 @@ class Window(QtGui.QMainWindow,form_class):
         self.messages.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
         self.errors.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
         self.commands.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
+
+    #set the ROV variable
+    def setROV(self, rov):
+        self.rov = rov
 
     #parse event function
     def eventFilter(self, widget, event):
@@ -227,24 +232,24 @@ class Window(QtGui.QMainWindow,form_class):
 
     #start ROV function
     def start_clicked(self):
-        self.command = "G"
-        self.updateConsole(self.command, TYPE.COMMAND)
+        self.updateConsole("G", TYPE.COMMAND)
+        self.rov.sendCommand("G")
 
     #stop ROV function
     def stop_clicked(self):
-        self.command = "SSS"
-        self.updateConsole(self.command, TYPE.COMMAND)
+        self.updateConsole("SSS", TYPE.COMMAND)
+        self.rov.sendCommand("SSS")
 
     #calibrate function
     def calibrate_clicked(self):
-        self.command = "calib"
-        self.updateConsole(self.command, TYPE.COMMAND)
+        self.updateConsole("calib", TYPE.COMMAND)
+        self.rov.sendCommand("calib")
 
     #send commands from command input
     def send_clicked(self):
-        self.command = self.cmdInput.text()
+        self.updateConsole(self.cmdInput.text(), TYPE.COMMAND)
+        self.rov.sendCommand(self.cmdInput.text())
         self.cmdInput.setText("")
-        self.updateConsole(self.command, TYPE.COMMAND)
 
     #toggle running state
     def startVideo_clicked(self):
@@ -425,12 +430,6 @@ class Window(QtGui.QMainWindow,form_class):
         self.depth.display(float(str("{0:.3f}".format(depth))))
         self.pitch.setText(("{0:.2f}".format(pitch)+"°").decode("utf-8"))
         self.roll.setText(("{0:.2f}".format(roll)+"°").decode("utf-8"))
-
-    #get commands from console
-    def getCommands(self):
-        comm = self.command
-        self.command = ""
-        return comm
 
     #get running state
     def isRunning(self):

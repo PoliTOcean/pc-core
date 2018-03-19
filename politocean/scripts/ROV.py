@@ -22,6 +22,7 @@ from PyQt4.QtCore import *
 #ROV class
 class ROV:
     def __init__(self, win):
+        win.setROV(self);    #set itself as the rov variable in the window object
         self.window = win
         self.zeroPressure = 0
         self.received = False
@@ -54,6 +55,8 @@ class ROV:
             self.window.emit(SIGNAL("updateATMega(int)"), data.status)
         elif data.ID==ID.JOYSTICK:
             self.window.emit(SIGNAL("updateJoystick(int)"), data.status)
+            if data.status==STATUS.DISABLED:    #if it's disabled
+                self.window.stop_clicked();     #stop the rov (click the STOP button)
 
     #print sensors over widgets
     def sensorsCallback(self, data):
@@ -83,8 +86,6 @@ class ROV:
         self.received = True
         #get from "cameras" Topic and print on the video
         self.window.setCurrentFrame(index, img)
-        #DEBUG PRINT
-        #print("I'm converting")
 
 
     #send command over the topic
