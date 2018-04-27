@@ -1,0 +1,9 @@
+<launch>
+
+<!-- a node the read the joystick input and write it on a topic -->
+	<node name="joystick_publisher" pkg="politocean" type="joystick_publisher.py" />
+
+<!-- the main node of the GUI: it inits the GUI and ROV object -->
+	<node name="mainGUI" pkg="politocean" type="mainGUI.py" />
+
+</launch>

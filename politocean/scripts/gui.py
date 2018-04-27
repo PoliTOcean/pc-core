@@ -32,9 +32,27 @@ class Window(QtGui.QMainWindow,form_class):
         self.bridge = CvBridge()
 
         #logo
-        ppm = QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png")
-        self.politocean.setPixmap( ppm.scaled(270, 45, QtCore.Qt.KeepAspectRatio) )
+        self.ppm = QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png")
+        self.politocean.setPixmap( self.ppm.scaled(270, 45, QtCore.Qt.KeepAspectRatio) )
         self.politocean.show()
+        
+        #loading image of Arm Widget
+         #state 0 axis 0 nipper 0 (x,open)
+         #state 1 axis 0 nipper 1 (x,close)
+         #state 2 axis 1 nipper 0 (y,open)
+         #state 3 axis 1 nipper 1 (y,close)
+        self.stateArm = []
+        self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/arm1.png"))
+        self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/arm2.png"))
+        self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
+        self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
+                
+        
+        #set default arm state widget
+        self.axis = 0
+        self.nipper = 0
+        self.label_5.setPixmap(self.stateArm[1].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+        self.label_5.show()
 
         #import of style sheet (written in CSS)
         styleSheet = open(PATH_ROS+"/politocean/scripts/gui/style.css", "r")
@@ -89,6 +107,11 @@ class Window(QtGui.QMainWindow,form_class):
         timer = QTimer(self)
         self.connect(timer, SIGNAL("timeout()"), self.setFrame)
         timer.start(45)
+        
+        #set a timer to call armUpdate function
+        timer = QTimer(self)
+        self.connect(timer, SIGNAL("timeout()"), self.armUpdate)
+        timer.start(45)
 
         #connect signals to update
         self.connect(self, SIGNAL("updateHTML()"), self.updateConsoleHTML)
@@ -103,6 +126,28 @@ class Window(QtGui.QMainWindow,form_class):
         self.messages.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
         self.errors.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
         self.commands.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
+    
+    # update arm variable
+    def setArmAxis(self,axis):
+        self.axis = axis
+        
+    def setArmNipper(self,nipper):
+        self.nipper = nipper
+    
+    # set arm Image
+    def armUpdate(self):
+        if self.axis >= 1 and self.nipper == 0:
+            self.label_5.setPixmap(self.stateArm[0].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+            self.label_5.show()
+        if self.axis >= 1 and self.nipper == 1:
+           self.label_5.setPixmap(self.stateArm[1].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+           self.label_5.show()
+        if self.axis <= -1 and self.nipper == 0:
+            self.label_5.setPixmap(self.stateArm[2].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+            self.label_5.show()
+        if self.axis <= -1 and self.nipper == 1:
+            self.label_5.setPixmap(self.stateArm[3].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+            self.label_5.show()                
 
     #set the ROV variable
     def setROV(self, rov):

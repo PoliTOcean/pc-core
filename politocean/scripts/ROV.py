@@ -35,6 +35,8 @@ class ROV:
         sensors_sub = rospy.Subscriber("sensors", sensors_data, self.sensorsCallback)
         messages_sub = rospy.Subscriber("messages", String, self.messagesCallback)
         comp_sub = rospy.Subscriber("components", component_data, self.componentsCallback)
+        joystick_sub = rospy.Subscriber("joystick_axis",joystick_axis,self.armWidgetUpdate)
+        button_sub = rospy.Subscriber("joystick_buttons",joystick_buttons,self.armNipperUpdate)
 
         #commands publisher
         self.commands_pub = rospy.Publisher("commands", String, queue_size=3)
@@ -45,6 +47,19 @@ class ROV:
         self.zeroDepthPressure = 0.0
         self.zeroPitch = 0.0
         self.zeroRoll = 0.0
+
+    def armNipperUpdate(self,data):
+        if data.ID == 'i_butt':
+            self.window.setArmNipper(0)
+        if data.ID == 'd_butt':
+            self.window.setArmNipper(1)
+        
+    def armWidgetUpdate(self,data):
+        #reading a joystick msg for update robotics Arm widget
+        if data.ID == 'z':
+            state = data.status
+            self.window.setArmAxis(state)
+
 
     #callback function for components updates
     def componentsCallback(self, data):

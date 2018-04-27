@@ -33,9 +33,8 @@ def exit(n):
 
 #function to init ROV and send commands
 def initAndSend(window, rov):
-    os.system("rosrun politocean joystick_publisher.py &")
-
-    #active "commands" topic
+   
+   #active "commands" topic
     for i in range(1,4):
         rov.sendCommand("W")
         sleep(0.3)
@@ -72,9 +71,6 @@ def main():
 
     #start the gui app
     n=app.exec_()
-
-    #when it's closed, send stop signal to the ROV
-    rov.sendCommand("SSS")
 
     exit(n)
 
