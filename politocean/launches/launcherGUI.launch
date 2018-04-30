@@ -1,4 +1,6 @@
 <launch>
+<!-- bad way to link the master, this file will also launch a new core (unused) -->
+	<env name="ROS_MASTER_URI"  value="http://10.0.0.11:11311"/>
 
 <!-- a node the read the joystick input and write it on a topic -->
 	<node name="joystick_publisher" pkg="politocean" type="joystick_publisher.py" />
