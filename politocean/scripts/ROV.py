@@ -22,14 +22,22 @@ from PyQt4.QtCore import *
 #ROV class
 class ROV:
     def __init__(self, win):
-        win.setROV(self);    #set itself as the rov variable in the window object
+                #set "global" variables
+        self.toCalibrate = False
+        self.firstCalibrationDone = False
+        self.zeroDepthPressure = 0.0
+        self.zeroPitch = 0.0
+        self.zeroRoll = 0.0        
+        
+        #set itself as the rov variable in the window object
+        win.setROV(self);   
         self.window = win
         self.zeroPressure = 0
         self.received = False
         #cameras subscribers
-        self.image0_sub = rospy.Subscriber("/Cam0/webcam/image_raw", Image, self.camerasCallback, 0)
-        self.image1_sub = rospy.Subscriber("/Cam1/webcam/image_raw", Image, self.camerasCallback, 1)
-        self.image2_sub = rospy.Subscriber("/Cam2/webcam/image_raw", Image, self.camerasCallback, 2)
+        self.image0_sub = rospy.Subscriber("/cam_raw/image_raw", Image, self.camerasCallback, 0)
+        self.image1_sub = rospy.Subscriber("/cam1/image_raw", Image, self.camerasCallback, 1)
+        self.image2_sub = rospy.Subscriber("/cam2/image_raw", Image, self.camerasCallback, 2)
         #errors, messages, sensors and components subscribers
         errors_sub = rospy.Subscriber("errors", String, self.errorsCallback)
         sensors_sub = rospy.Subscriber("sensors", sensors_data, self.sensorsCallback)
@@ -41,12 +49,7 @@ class ROV:
         #commands publisher
         self.commands_pub = rospy.Publisher("commands", String, queue_size=3)
 
-        #set "global" variables
-        self.toCalibrate = False
-        self.firstCalibrationDone = False
-        self.zeroDepthPressure = 0.0
-        self.zeroPitch = 0.0
-        self.zeroRoll = 0.0
+
 
     def armNipperUpdate(self,data):
         if data.ID == 'i_butt':
