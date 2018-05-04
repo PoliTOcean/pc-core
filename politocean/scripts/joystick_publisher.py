@@ -154,6 +154,7 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
                         
                         try:
                             pub_butt.publish(butt_command) #send data over the topic
+                            publishComponent(NODE.JOYCHK, ID.JOYSTICK, STATUS.ENABLED)
                             
                         except rospy.ROSInterruptException as e:
                             publishErrors(NODE.JOYPUB, "Joystick publisher error: "+str(e))
@@ -169,6 +170,7 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
                         
                         try:
                             pub_axis.publish(axis_command) #send data over the topic
+                            publishComponent(NODE.JOYCHK, ID.JOYSTICK, STATUS.ENABLED)
                             
                         except rospy.ROSInterruptException as e:
                             publishErrors(NODE.JOYPUB, "Joystick publisher error: "+str(e))
