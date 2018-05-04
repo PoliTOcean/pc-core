@@ -83,7 +83,7 @@ class ROV:
         if self.toCalibrate: #if it has to be calibrated (calib command)
             self.calibrate(data.pressure, data.pitch, data.roll) #calibrate
         if self.firstCalibrationDone: #if it's already been calibrated
-            depth = (data.pressure-self.zeroDepthPressure)/1000 #calculate depth in meters
+            depth = (data.pressure-self.zeroDepthPressure)/100 #calculate depth in meters
         self.window.update_sensors(depth, data.pitch, data.roll) #update sensors on the gui
 
     #print messages on the console
