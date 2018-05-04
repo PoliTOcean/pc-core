@@ -35,7 +35,7 @@ class ROV:
         self.zeroPressure = 0
         self.received = False
         #cameras subscribers
-        self.image0_sub = rospy.Subscriber("/cam_raw/image_raw", Image, self.camerasCallback, 0)
+        self.image0_sub = rospy.Subscriber("/cam_fhd/image_raw", Image, self.camerasCallback, 0)
         self.image1_sub = rospy.Subscriber("/cam1/image_raw", Image, self.camerasCallback, 1)
         self.image2_sub = rospy.Subscriber("/cam2/image_raw", Image, self.camerasCallback, 2)
         #errors, messages, sensors and components subscribers
