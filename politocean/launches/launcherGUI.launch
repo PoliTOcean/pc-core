@@ -6,7 +6,7 @@
     <node name="image_proc" pkg="image_proc" type="image_proc" ns="cam_fhd"/>
 
 	<!-- a node the read the joystick input and write it on a topic -->
-	<node name="joystick_publisher" pkg="politocean" type="joystick_publisher.py" required="true"/>
+	<node name="joystick_publisher" pkg="politocean" type="joystick_publisher.py" respawn="true"/>
 
 	<!-- the main node of the GUI: it inits the GUI and ROV object -->
 	<node name="mainGUI" pkg="politocean" type="mainGUI.py" required="true"/>
