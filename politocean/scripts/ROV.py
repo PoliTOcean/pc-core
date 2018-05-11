@@ -22,22 +22,24 @@ from PyQt4.QtCore import *
 #ROV class
 class ROV:
     def __init__(self, win):
-                #set "global" variables
+        win.setROV(self);    #set itself as the rov variable in the window object
+        self.window = win
+        self.zeroPressure = 0
+        self.received = False
+        
+        
+        #set "global" variables
         self.toCalibrate = False
         self.firstCalibrationDone = False
         self.zeroDepthPressure = 0.0
         self.zeroPitch = 0.0
         self.zeroRoll = 0.0        
         
-        #set itself as the rov variable in the window object
-        win.setROV(self);   
-        self.window = win
-        self.zeroPressure = 0
-        self.received = False
         #cameras subscribers
-        self.image0_sub = rospy.Subscriber("/cam_fhd/image_rect_color", Image, self.camerasCallback, 0)
-        self.image1_sub = rospy.Subscriber("/cam1/image_raw", Image, self.camerasCallback, 1)
-        self.image2_sub = rospy.Subscriber("/cam2/image_raw", Image, self.camerasCallback, 2)
+        self.image0_sub = rospy.Subscriber("/cam_fhd/image_raw", Image, self.camerasCallback, 0)
+        self.image1_sub = rospy.Subscriber("/cam1/webcam/image_raw", Image, self.camerasCallback, 1)
+        self.image2_sub = rospy.Subscriber("/cam2/webcam/image_raw", Image, self.camerasCallback, 2)
+        
         #errors, messages, sensors and components subscribers
         errors_sub = rospy.Subscriber("errors", String, self.errorsCallback)
         sensors_sub = rospy.Subscriber("sensors", sensors_data, self.sensorsCallback)
@@ -79,12 +81,12 @@ class ROV:
     #print sensors over widgets
     def sensorsCallback(self, data):
         self.received = True
-        depth = -1.111
+        depth = -1.11
         if self.toCalibrate: #if it has to be calibrated (calib command)
             self.calibrate(data.pressure, data.pitch, data.roll) #calibrate
-        if self.firstCalibrationDone: #if it's already been calibrated
+        else: #if it's already been calibrated
             depth = (data.pressure-self.zeroDepthPressure)/100 #calculate depth in meters
-        self.window.update_sensors(depth, data.pitch, data.roll) #update sensors on the gui
+        self.window.setSensorsValue(depth, data.pitch, data.roll,data.temperature) #update values of sensors on the gui
 
     #print messages on the console
     def messagesCallback(self, data):
