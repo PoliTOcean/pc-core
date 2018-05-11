@@ -1,5 +1,3 @@
-
-
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
@@ -19,8 +17,8 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-  <widget class="QGroupBox" name="groupBox">
- <property name="geometry">
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
      <rect>
       <x>0</x>
       <y>10</y>
@@ -49,7 +47,7 @@
        <height>571</height>
       </rect>
      </property>
-   </widget>
+    </widget>
     <widget class="QLabel" name="cam2">
      <property name="geometry">
       <rect>
@@ -109,7 +107,7 @@
      <property name="geometry">
       <rect>
        <x>1570</x>
-      <y>30</y>
+       <y>30</y>
        <width>231</width>
        <height>71</height>
       </rect>
@@ -139,7 +137,7 @@
       <rect>
        <x>140</x>
        <y>100</y>
-      <width>141</width>
+       <width>141</width>
        <height>22</height>
       </rect>
      </property>
@@ -169,7 +167,7 @@
        <x>830</x>
        <y>170</y>
        <width>261</width>
-      <height>161</height>
+       <height>161</height>
       </rect>
      </property>
      <property name="title">
@@ -269,7 +267,7 @@
           </color>
          </brush>
         </colorrole>
-       <colorrole role="Base">
+        <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
@@ -349,7 +347,7 @@
            <red>255</red>
            <green>255</green>
            <blue>255</blue>
-         </color>
+          </color>
          </brush>
         </colorrole>
         <colorrole role="Midlight">
@@ -399,7 +397,7 @@
         </colorrole>
         <colorrole role="ButtonText">
          <brush brushstyle="SolidPattern">
-         <color alpha="255">
+          <color alpha="255">
            <red>0</red>
            <green>0</green>
            <blue>0</blue>
@@ -409,16 +407,6 @@
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
-          </color>
-         </brush>
-        </colorrole>
-        <colorrole role="Window">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>227</red>
            <red>255</red>
            <green>255</green>
            <blue>255</blue>
@@ -1005,9 +993,9 @@
        <number>1</number>
       </property>
       <property name="text">
-       <string>  </string>
+       <string>°</string>
       </property>
-     <property name="scaledContents">
+      <property name="scaledContents">
        <bool>true</bool>
       </property>
      </widget>
@@ -1035,7 +1023,7 @@
         <x>90</x>
         <y>60</y>
         <width>151</width>
-       <height>41</height>
+        <height>41</height>
        </rect>
       </property>
       <property name="text">
@@ -1119,7 +1107,7 @@
       <property name="geometry">
        <rect>
         <x>80</x>
-       <y>120</y>
+        <y>120</y>
         <width>17</width>
         <height>17</height>
        </rect>
@@ -1147,7 +1135,7 @@
     </widget>
     <widget class="QWidget" name="tab4">
      <attribute name="title">
-     <string>Energy</string>
+      <string>Energy</string>
      </attribute>
     </widget>
    </widget>
@@ -1156,62 +1144,3 @@
  <resources/>
  <connections/>
 </ui>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
