@@ -27,7 +27,7 @@ class Window(QtGui.QMainWindow,form_class):
 
         #we need this variable to send commands from here
         self.rov = None
-        
+
         #set default sensors values
         self.depth_value = -1.11
         self.pitch_value = 0
@@ -41,7 +41,7 @@ class Window(QtGui.QMainWindow,form_class):
         self.ppm = QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png")
         self.politocean.setPixmap( self.ppm.scaled(270, 45, QtCore.Qt.KeepAspectRatio) )
         self.politocean.show()
-        
+
         #loading image of Arm Widget
          #state 0 axis 0 nipper 0 (x,open)
          #state 1 axis 0 nipper 1 (x,close)
@@ -52,14 +52,14 @@ class Window(QtGui.QMainWindow,form_class):
         self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/arm2.png"))
         self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
         self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
-              
-        
+
+
         #set default arm state widget
         self.axis = 0
         self.nipper = 0
         self.label_5.setPixmap(self.stateArm[1].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
         self.label_5.show()
-               
+
 
         #import of style sheet (written in CSS)
         styleSheet = open(PATH_ROS+"/politocean/scripts/gui/style.css", "r")
@@ -110,20 +110,21 @@ class Window(QtGui.QMainWindow,form_class):
         self.altPressed = False
         self.cmdFocus = False
 
-        #set a timer to call setFrame function
+        #set a timer to call setFrame function (ca 29fps)
         self.timer = QTimer(self)
         self.connect(self.timer, SIGNAL("timeout()"), self.setFrame)
-        self.timer.start(33)
-        
-        #set a timer to call armUpdate function
+        self.timer.start(34)
+
+        #set a timer to call sensorsUpdate function (10Hz)
         self.timer2 = QTimer(self)
-        self.connect(self.timer2, SIGNAL("timeout()"), self.widgetsUpdate)
+        self.connect(self.timer2, SIGNAL("timeout()"), self.sensorsUpdate)
         self.timer2.start(100)
 
         #connect signals to update
         self.connect(self, SIGNAL("updateHTML()"), self.updateConsoleHTML)
         self.connect(self, SIGNAL("updateATMega(int)"), self.ATMegaEnabled)
         self.connect(self, SIGNAL("updateJoystick(int)"), self.joystickEnabled)
+        self.connect(self, SIGNAL("updateArm()"), self.armUpdate)
 
         #set the path of console log file
         self.consolePath = PATH_ROS+"/politocean/scripts/gui/console.log"
@@ -133,24 +134,25 @@ class Window(QtGui.QMainWindow,form_class):
         self.messages.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
         self.errors.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
         self.commands.stateChanged.connect(lambda:self.updateConsole("", TYPE.UPDATE))
-    
+
     # update arm variable
     def setArmAxis(self,axis):
         self.axis = axis
-        
+        self.emit(SIGNAL("updateArm()"))
+
     def setArmNipper(self,nipper):
         self.nipper = nipper
-    
-    # set arm Image
-    def widgetsUpdate(self):  
-                       
-        #update sensorsWidget
+        self.emit(SIGNAL("updateArm()"))
+
+    #update sensorsWidget
+    def sensorsUpdate(self):
         self.depth.display(float(str("{0:.3f}".format(self.depth_value))))
         self.temp.display(float(str("{0:.3f}".format(self.temperature_value))))
         self.pitch.setText(("{0:.2f}".format(self.pitch_value)+"°").decode("utf-8"))
-        self.roll.setText(("{0:.2f}".format(self.roll_value)+"°").decode("utf-8")) 
-        
-        #update amrWidget
+        self.roll.setText(("{0:.2f}".format(self.roll_value)+"°").decode("utf-8"))
+
+    #update armWidget
+    def armUpdate(self):
         if self.axis >= 1 and self.nipper == 0:
             self.label_5.setPixmap(self.stateArm[0].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
             self.label_5.show()
@@ -163,7 +165,7 @@ class Window(QtGui.QMainWindow,form_class):
         if self.axis <= -1 and self.nipper == 1:
             self.label_5.setPixmap(self.stateArm[3].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
             self.label_5.show()
-           
+
 
     #set the ROV variable
     def setROV(self, rov):
@@ -465,7 +467,7 @@ class Window(QtGui.QMainWindow,form_class):
         if status==STATUS.ENABLED:
             self.ATMegaStatus.setPixmap( self.vpm )
             self.ATMega.setText("ATMega connected")
-        elif status==STATUS.DISABLED:         
+        elif status==STATUS.DISABLED:
             self.ATMegaStatus.setPixmap( self.xpm )
             self.ATMega.setText("ATMega disconnected")
         elif status==STATUS.BUSY:
