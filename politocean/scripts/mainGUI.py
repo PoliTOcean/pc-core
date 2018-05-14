@@ -24,10 +24,10 @@ from politocean.msg import *
 
 #function to init ROV and send commands
 def initAndSend(window, rov):
-   
+
+    rate = rospy.Rate(2) # 2 Hz
     #while to check if the ROV is awake, as well as tell the ROV that GUI is awake
     while not rospy.is_shutdown():
-        sleep(0.5)
         tic = timeit.default_timer()   #tell the ROV that GUI is awake
         while not rospy.is_shutdown() and not rov.isAwake(): #if it's not awake
             sleep(0.1)
@@ -36,12 +36,13 @@ def initAndSend(window, rov):
                 publishErrors(NODE.GUI, "ROV is not responding") #print on console
                 publishComponent(NODE.GUI, ID.ATMEGA, STATUS.DISABLED) #publish ATMega status
             sleep(0.1)
+        rate.sleep()
 
 def main():
 
     #set the node name
-    rospy.init_node(NODE.GUI, anonymous=False)    
-    
+    rospy.init_node(NODE.GUI, anonymous=False)
+
     app = QtGui.QApplication(sys.argv) #gui app init
 
     #window object
