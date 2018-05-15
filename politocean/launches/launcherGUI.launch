@@ -2,8 +2,8 @@
 	<!-- bad way to link the master, this file will also launch a new core (unused) -->
 	<env name="ROS_MASTER_URI"  value="http://10.0.0.11:11311"/>
 
-	<!-- this line is for: ROS_NAMESPACE=cam_fhd rosrun image_proc image_proc -->
-    <node name="image_proc" pkg="image_proc" type="image_proc" ns="cam_fhd"/>
+        <!-- to catch the raw image from the raspicam -->
+        <node name="republish" type="republish" pkg="image_transport" output="screen" args="compressed in:=/camera/image raw out:=/raspicam_node/image"/>
 
 	<!-- a node the read the joystick input and write it on a topic -->
 	<node name="joystick_publisher" pkg="politocean" type="joystick_publisher.py" respawn="true"/>
