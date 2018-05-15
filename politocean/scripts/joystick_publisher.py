@@ -10,9 +10,13 @@ import os, struct, array
 from fcntl import ioctl
 import time
 from errmess_publisher import *
+import thread
+from std_msgs.msg import Bool
 
 #set the name of the node
 rospy.init_node(NODE.JOYPUB, anonymous=False)
+#awake topic publisher
+pub_awake = rospy.Publisher('joystick_awake', Bool, queue_size=0)
 
 #check inout devices and initialize the joystick
 def joy_init():
@@ -21,7 +25,7 @@ def joy_init():
         if any(fn.startswith('js') for fn in os.listdir('/dev/input')):
             break
     time.sleep(1)
-    
+
     publishComponent(NODE.JOYCHK, ID.JOYSTICK, STATUS.ENABLED)
 
     # We'll store the states here.
@@ -60,21 +64,21 @@ def joy_init():
         0x12c : 'base5',
         0x12d : 'base6',
         0x12e : 'trigger2',
-        
+
         0x12f : 'cpad_up',
         0x2c0 : 'cpad_right',
         0x2c1 : 'cpad_down',
         0x2c2 : 'cpad_left',
-        
+
         0x2c3 : 'back_up',
         0x2c4 : 'back_right',
         0x2c5 : 'back_down',
         0x2c6 : 'back_left',
-        
+
         0x2c7 : 'mode_1',
         0x2c8 : 'mode_2',
         0x2c9 : 'mode_3',
-        
+
         0x2ca : 'function',
         0x2cb : 'start-stop',
         0x2cc : 'reset',
@@ -134,7 +138,7 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
     #prepare variable that has to be sent
     axis_command = joystick_axis()
     butt_command = joystick_buttons()
-    
+
     #loop until ros is active
     while not rospy.is_shutdown():
 
@@ -143,7 +147,7 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
 
             if evbuf:
                 jtime, value, type, number = struct.unpack('IhBB', evbuf)
-                
+
                 # button events
                 if type & 0x01:
                     button = button_map[number]
@@ -151,14 +155,14 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
                         button_states[button] = value
                         butt_command.ID = button
                         butt_command.status = value
-                        
+
                         try:
                             pub_butt.publish(butt_command) #send data over the topic
                             publishComponent(NODE.JOYCHK, ID.JOYSTICK, STATUS.ENABLED)
-                            
+
                         except rospy.ROSInterruptException as e:
                             publishErrors(NODE.JOYPUB, "Joystick publisher error: "+str(e))
-                
+
                 # axis events
                 if type & 0x02:
                     axis = axis_map[number]
@@ -167,25 +171,48 @@ def joystick_publisher(jsdev, button_map, button_states, axis_map, axis_states):
                         axis_states[axis] = fvalue
                         axis_command.ID = axis
                         axis_command.status = fvalue
-                        
+
                         try:
                             pub_axis.publish(axis_command) #send data over the topic
                             publishComponent(NODE.JOYCHK, ID.JOYSTICK, STATUS.ENABLED)
-                            
+
                         except rospy.ROSInterruptException as e:
                             publishErrors(NODE.JOYPUB, "Joystick publisher error: "+str(e))
-                        
+
         except IOError: # if the joystick is disconnected
             publishMessages(NODE.JOYPUB, "Joystick has been disconnected.")
             publishComponent(NODE.JOYCHK, ID.JOYSTICK, STATUS.DISABLED)
-            
+
+            butt_command.ID = "thumb"
+            butt_command.status = True
+            pub_butt.publish(butt_command) #send data over the topic
+
             jsdev, button_map, button_state, axis_map, axis_state = joy_init()
-            
+
             publishMessages(NODE.JOYPUB, "Joystick reconnected.")
+
+
+def awakeCheck():
+    global pub_awake    #publisher
+    #while to tell the subscriber that the publisher is awake
+    rate = rospy.Rate(1) # 1 Hz
+    while not rospy.is_shutdown():
+        pub_awake.publish(True)
+        rate.sleep()
+
+
 
 
 if __name__ == '__main__':
     errMessInit() #init topics
 
     jsdev, button_map, button_state, axis_map, axis_state = joy_init()
+
+    #init a thread to send check signals
+    try:
+        thread.start_new_thread(awakeCheck, ())
+    except Exception as e:
+        publishErrors(NODE.JOYPUB, "Unable to start the thread: "+str(e))
+        print("THREAD ERROR!!!!")
+    
     joystick_publisher(jsdev, button_map, button_state, axis_map, axis_state)
