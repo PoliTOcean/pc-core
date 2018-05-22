@@ -14,7 +14,7 @@ import re
 
 #take ROS path from bash environment
 PATH_ROS = os.environ['ROS_PACKAGE_PATH'].split(':')[0]
-form_class = uic.loadUiType(PATH_ROS+"/politocean/scripts/gui/simple2.ui")[0]
+form_class = uic.loadUiType(PATH_ROS+"/politocean/scripts/gui/design_fhd.ui")[0]
 
 #main window class
 class Window(QtGui.QMainWindow,form_class):
@@ -54,13 +54,6 @@ class Window(QtGui.QMainWindow,form_class):
         self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
 
 
-        #set default arm state widget
-        self.axis = 0
-        self.nipper = 0
-        self.label_5.setPixmap(self.stateArm[1].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
-        self.label_5.show()
-
-
         #import of style sheet (written in CSS)
         styleSheet = open(PATH_ROS+"/politocean/scripts/gui/style.css", "r")
         self.ROVdata.setStyleSheet( styleSheet.read() )
@@ -91,20 +84,15 @@ class Window(QtGui.QMainWindow,form_class):
 
         #install event filters
         self.cmdInput.installEventFilter(self)
-        self.cam2.installEventFilter(self)
-        self.cam3.installEventFilter(self)
         self.installEventFilter(self)
-
-        #connect radio toggle to the function
-        self.camRadio1.toggled.connect(self.toggledRadio)
-        self.camRadio2.toggled.connect(self.toggledRadio)
-        self.camRadio3.toggled.connect(self.toggledRadio)
 
         #boolean for start the connection
         self.running = False
 
         #set default cam indexes
-        self.cam = [0, 1, 2]
+        #self.cam = [0, 1, 2]
+        self.frame1 = None
+        self.frame2 = None
 
         #flag
         self.altPressed = False
@@ -183,13 +171,8 @@ class Window(QtGui.QMainWindow,form_class):
                     self.cmdFocus = True    #flag to stop ESC propagation (see below)
         elif widget is self and event.type()==QtCore.QEvent.KeyPress:    #else if it's on the window
             k = event.key()
-            if k == QtCore.Qt.Key_1: #if it's 1, 2 or 3
-                self.camRadio1.setChecked(True)           #set main camera
-            elif k == QtCore.Qt.Key_2: #if it's 2
-                self.camRadio2.setChecked(True)
-            elif k == QtCore.Qt.Key_3:
-                self.camRadio3.setChecked(True)
-            elif k == QtCore.Qt.Key_C: #if it's C
+            
+            if k == QtCore.Qt.Key_C: #if it's C
                 self.calibrate_clicked()    #calibrate
             elif k == QtCore.Qt.Key_V: #if it's V
                 self.startVideo_clicked()   #video start/stop
@@ -219,26 +202,8 @@ class Window(QtGui.QMainWindow,form_class):
             elif k == QtCore.Qt.Key_F3: #if it's F3
                 self.tab.setCurrentIndex(2) #select 3rd tab
             elif k == QtCore.Qt.Key_F4: #if it's F4
-                self.tab.setCurrentIndex(3) #select 4th tab
-        elif (event.type()==QtCore.QEvent.MouseButtonPress  #else if it's a mouse event
-                and event.button() == QtCore.Qt.LeftButton  #and it's left button
-                and not widget is self.mainCam              #and is not the main camera
-                and self.running):                          #and cameras are running
-            ind = 0
-            if widget is self.cam2: #check for which cam has been pressed
-                ind = 1
-            elif widget is self.cam3:
-                ind = 2
-            j = 0
-            for i in range(1,3): #let's see which cam is pointing to the "ind" cam widget
-                if self.cam[i]==ind:
-                    j = i
-            if j==0:    #check which camera was pointing to the clicked widget
-                self.camRadio1.setChecked(True) #check the right radio (this will call the function to update cameras)
-            elif j==1:
-                self.camRadio2.setChecked(True)
-            elif j==2:
-                self.camRadio3.setChecked(True)
+                self.tab.setCurrentIndex(3) #select 4th tab                         #and cameras are running
+            
         return QtGui.QWidget.eventFilter(self, widget, event)
 
     #function to show keyboard shortcuts
@@ -283,15 +248,6 @@ class Window(QtGui.QMainWindow,form_class):
             self.recognize.setText( self.recognize.text().replace(' [R]', '') )
             self.showPlot.setText( self.showPlot.text().replace(' [P]', '') )
 
-    #function called when a radio has been toggled
-    def toggledRadio(self):
-        #check which radio is checked
-        if self.camRadio1.isChecked():
-            self.setMainCamera(0) #and call setMainCamera with the right camera index
-        elif self.camRadio2.isChecked():
-            self.setMainCamera(1)
-        elif self.camRadio3.isChecked():
-            self.setMainCamera(2)
 
     #start ROV function
     def start_clicked(self):
@@ -323,7 +279,6 @@ class Window(QtGui.QMainWindow,form_class):
             if self.altPressed:
                 text+=' [V]'
             self.startVideoBtn.setText(text)
-            sleep(0.1)
         else:
             #end of connection
             text = 'Start video'
@@ -331,43 +286,35 @@ class Window(QtGui.QMainWindow,form_class):
                 text+=' [V]'
             self.startVideoBtn.setText(text)
             self.running = False;
-            sleep(0.1)
             self.frm = [self.QTsegn_ass, self.QTsegn_ass, self.QTsegn_ass]
-
-    #set camInd as main camera
-    def setMainCamera(self, camInd):
-        j0 = 0
-        for i in range(1,3): #let's see which camera is the main one
-            if self.cam[i]==0:
-                j0 = i
-        #swap pointers
-        self.cam[j0] = self.cam[camInd]
-        self.cam[camInd] = 0
 
     #set img as current frame of cam[index]
     def setCurrentFrame(self, index, img):
         if not self.running:
             return
-        i = self.cam[index]
-        if i==0:
-            width = self.mainCam.frameSize().width()
-            height = self.mainCam.frameSize().height()
-        else:
-            width = self.cam2.frameSize().width()
-            height = self.cam2.frameSize().height()
+        #i = self.cam[index]
+        width = 640
+        height = 480
         #parse image to get a QImage object
-        self.frm[i] = self.parse_image(img, width, height)
+        #self.frm[i] = self.parse_image(img, width, height)
+        if index == 0:
+            self.frame1 = img
+        else:
+            self.frame2 = img
 
     #set self.frm[] to all the cams
     def setFrame(self):
         if not self.running:
             return
-        self.update_frame_cam(self.mainCam, self.frm[0])
-        self.update_frame_cam(self.cam2, self.frm[1])
-        self.update_frame_cam(self.cam3, self.frm[2])
+        
+        self.update_frame_cam(self.mainCam, self.frame1)
+        self.update_frame_cam(self.cam3, self.frame2)
 
     #create pixmap and set it on the cam
     def update_frame_cam(self, cam, frm):
+        width = 640
+        height = 480
+        frm = self.parse_image(frm, width, height)
         pixmap = QPixmap.fromImage(frm)
         cam.setPixmap( pixmap )
 
@@ -381,13 +328,7 @@ class Window(QtGui.QMainWindow,form_class):
         except CvBridgeError as e:
             print(e)
             return None
-        img_height, img_width, img_colors = img.shape
-        scale_w = float(width) / float(img_width)
-        scale_h = float(height) / float(img_height)
-        scale = min([scale_w, scale_h])
-
-        img = cv2.resize(img, None, fx=scale_w, fy=scale, interpolation = cv2.INTER_CUBIC)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)	    
         height, width, bpc = img.shape
         bpl = bpc * width
         image = QtGui.QImage(img.data, width, height, bpl, QtGui.QImage.Format_RGB888)

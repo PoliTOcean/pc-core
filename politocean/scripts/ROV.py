@@ -36,17 +36,16 @@ class ROV:
         self.zeroRoll = 0.0        
         
         #cameras subscribers
-        self.image0_sub = rospy.Subscriber("/cam_fhd/image_raw", Image, self.camerasCallback, 0)
-        self.image1_sub = rospy.Subscriber("/cam1/webcam/image_raw", Image, self.camerasCallback, 1)
-        self.image2_sub = rospy.Subscriber("/cam2/webcam/image_raw", Image, self.camerasCallback, 2)
+        self.image0_sub = rospy.Subscriber("/cam_fhd/image_raw", Image, self.camerasCallback, 1)
+        self.image1_sub = rospy.Subscriber("/raspicam_node/image", Image, self.camerasCallback, 0)
         
         #errors, messages, sensors and components subscribers
-        errors_sub = rospy.Subscriber("errors", String, self.errorsCallback)
-        sensors_sub = rospy.Subscriber("sensors", sensors_data, self.sensorsCallback)
-        messages_sub = rospy.Subscriber("messages", String, self.messagesCallback)
-        comp_sub = rospy.Subscriber("components", component_data, self.componentsCallback)
-        joystick_sub = rospy.Subscriber("joystick_axis",joystick_axis,self.armWidgetUpdate)
-        button_sub = rospy.Subscriber("joystick_buttons",joystick_buttons,self.armNipperUpdate)
+        self.errors_sub = rospy.Subscriber("errors", String, self.errorsCallback)
+        self.sensors_sub = rospy.Subscriber("sensors", sensors_data, self.sensorsCallback)
+        self.messages_sub = rospy.Subscriber("messages", String, self.messagesCallback)
+        self.comp_sub = rospy.Subscriber("components", component_data, self.componentsCallback)
+        self.joystick_sub = rospy.Subscriber("joystick_axis",joystick_axis,self.armWidgetUpdate)
+        self.button_sub = rospy.Subscriber("joystick_buttons",joystick_buttons,self.armNipperUpdate)
 
         #commands publisher
         self.commands_pub = rospy.Publisher("commands", String, queue_size=3)
