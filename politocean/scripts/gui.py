@@ -30,9 +30,9 @@ class Window(QtGui.QMainWindow,form_class):
 
         #set default sensors values
         self.depth_value = -1.11
-        self.pitch_value = 0
-        self.roll_value = 0
-        self.temperature_value = 0
+        self.pitch_value = 10
+        self.roll_value = 10
+        self.temperature_value = 34
 
         #bridge for image converting
         self.bridge = CvBridge()
@@ -47,11 +47,12 @@ class Window(QtGui.QMainWindow,form_class):
          #state 1 axis 0 nipper 1 (x,close)
          #state 2 axis 1 nipper 0 (y,open)
          #state 3 axis 1 nipper 1 (y,close)
-        self.stateArm = []
-        self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/arm1.png"))
-        self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/arm2.png"))
-        self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
-        self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
+#deprecated ARM WIDGET
+        #self.stateArm = []
+        #self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/arm1.png"))
+        #self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/arm2.png"))
+        #self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
+        #self.stateArm.append(QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/politocean3.png"))
 
 
         #import of style sheet (written in CSS)
@@ -112,7 +113,7 @@ class Window(QtGui.QMainWindow,form_class):
         self.connect(self, SIGNAL("updateHTML()"), self.updateConsoleHTML)
         self.connect(self, SIGNAL("updateATMega(int)"), self.ATMegaEnabled)
         self.connect(self, SIGNAL("updateJoystick(int)"), self.joystickEnabled)
-        self.connect(self, SIGNAL("updateArm()"), self.armUpdate)
+        #self.connect(self, SIGNAL("updateArm()"), self.armUpdate)
 
         #set the path of console log file
         self.consolePath = PATH_ROS+"/politocean/scripts/gui/console.log"
@@ -136,23 +137,23 @@ class Window(QtGui.QMainWindow,form_class):
     def sensorsUpdate(self):
         self.depth.display(float(str("{0:.3f}".format(self.depth_value))))
         self.temp.display(float(str("{0:.3f}".format(self.temperature_value))))
-        self.pitch.setText(("{0:.2f}".format(self.pitch_value)+"°").decode("utf-8"))
-        self.roll.setText(("{0:.2f}".format(self.roll_value)+"°").decode("utf-8"))
+        self.pitch.display(float(str("{0:.3f}".format(self.pitch_value))))
+        self.roll.display(float(str("{0:.3f}".format(self.roll_value))))
 
-    #update armWidget
-    def armUpdate(self):
-        if self.axis >= 1 and self.nipper == 0:
-            self.label_5.setPixmap(self.stateArm[0].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
-            self.label_5.show()
-        if self.axis >= 1 and self.nipper == 1:
-           self.label_5.setPixmap(self.stateArm[1].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
-           self.label_5.show()
-        if self.axis <= -1 and self.nipper == 0:
-            self.label_5.setPixmap(self.stateArm[2].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
-            self.label_5.show()
-        if self.axis <= -1 and self.nipper == 1:
-            self.label_5.setPixmap(self.stateArm[3].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
-            self.label_5.show()
+    #update armWidget (DEPRECATED)
+    #def armUpdate(self):
+    #    if self.axis >= 1 and self.nipper == 0:
+    #        self.label_5.setPixmap(self.stateArm[0].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+    #        self.label_5.show()
+    #    if self.axis >= 1 and self.nipper == 1:
+    #       self.label_5.setPixmap(self.stateArm[1].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+    #       self.label_5.show()
+    #    if self.axis <= -1 and self.nipper == 0:
+    #        self.label_5.setPixmap(self.stateArm[2].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+    #        self.label_5.show()
+    #    if self.axis <= -1 and self.nipper == 1:
+    #        self.label_5.setPixmap(self.stateArm[3].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
+    #        self.label_5.show()
 
 
     #set the ROV variable
@@ -251,13 +252,13 @@ class Window(QtGui.QMainWindow,form_class):
 
     #start ROV function
     def start_clicked(self):
-        self.updateConsole("G", TYPE.COMMAND)
-        self.rov.sendCommand("G")
+        self.updateConsole("thumb2", TYPE.COMMAND)
+        self.rov.enable12Volt()
 
     #stop ROV function
     def stop_clicked(self):
-        self.updateConsole("SSS", TYPE.COMMAND)
-        self.rov.sendCommand("SSS")
+        self.updateConsole("thumb", TYPE.COMMAND)
+        self.rov.disable12Volt()
 
     #calibrate function
     def calibrate_clicked(self):
@@ -324,11 +325,11 @@ class Window(QtGui.QMainWindow,form_class):
             return self.QTsegn_ass
         img = None
         try:
-            img = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            img = self.bridge.imgmsg_to_cv2(data, "rgb8")
         except CvBridgeError as e:
             print(e)
             return None
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)	    
+        #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)	    
         height, width, bpc = img.shape
         bpl = bpc * width
         image = QtGui.QImage(img.data, width, height, bpl, QtGui.QImage.Format_RGB888)
