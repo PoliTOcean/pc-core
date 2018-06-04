@@ -52,9 +52,13 @@ class ROV:
         self.virtualJoystick = rospy.Publisher("joystick_buttons",joystick_buttons,queue_size = 0)
 
 
-
+    
+    def changeStatusDriver(self,data):
+        self.window.emit
+    
     def armNipperUpdate(self,data):
         if data.ID == 'i_butt':
+    #callback function for components updates
             self.window.setArmNipper(0)
         if data.ID == 'd_butt':
             self.window.setArmNipper(1)
@@ -66,7 +70,6 @@ class ROV:
             #self.window.setArmAxis(state)
 
 
-    #callback function for components updates
     def componentsCallback(self, data):
         if data.status==STATUS.REQUEST: #if it's just a request
             return #exit
@@ -77,6 +80,9 @@ class ROV:
             self.window.emit(SIGNAL("updateJoystick(int)"), data.status)
             if data.status==STATUS.DISABLED:    #if it's disabled
                 self.window.stop_clicked();     #stop the rov (click the STOP button)
+        elif data.ID=="wrist": #check for the component
+            #and send the signal with the status
+            self.window.emit(SIGNAL("updateDriver(int)"), data.status)
 
     #print sensors over widgets
     def sensorsCallback(self, data):
