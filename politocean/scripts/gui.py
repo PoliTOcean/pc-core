@@ -72,6 +72,7 @@ class Window(QtGui.QMainWindow,form_class):
         self.wpm = QtGui.QPixmap(PATH_ROS+"/politocean/scripts/gui/wait.png").scaled(17,17)
         self.joystickStatus.setPixmap( self.xpm ) #set "disabled" image at first
         self.ATMegaStatus.setPixmap( self.xpm )
+        self.DriverStatus.setPixmap( self.xpm )
 
         #connect button pression to relative functions
         self.startVideoBtn.clicked.connect(self.startVideo_clicked)
@@ -113,6 +114,8 @@ class Window(QtGui.QMainWindow,form_class):
         self.connect(self, SIGNAL("updateHTML()"), self.updateConsoleHTML)
         self.connect(self, SIGNAL("updateATMega(int)"), self.ATMegaEnabled)
         self.connect(self, SIGNAL("updateJoystick(int)"), self.joystickEnabled)
+        self.connect(self, SIGNAL("updateDriver(int)"), self.driverEnabled)
+        
         #self.connect(self, SIGNAL("updateArm()"), self.armUpdate)
 
         #set the path of console log file
@@ -416,6 +419,17 @@ class Window(QtGui.QMainWindow,form_class):
             self.ATMegaStatus.setPixmap( self.wpm )
             self.ATMega.setText("ATMega busy")
         self.ATMegaStatus.show()
+    
+    #set Driver status (change image)
+    def driverEnabled(self, status):
+        if status==STATUS.ENABLED:
+            self.DriverStatus.setPixmap( self.vpm )
+        elif status==STATUS.DISABLED:
+            self.DriverStatus.setPixmap( self.xpm )
+        elif status==STATUS.BUSY:
+            self.DriverStatus.setPixmap( self.wpm )
+        self.DriverStatus.show()
+    
 
     #set Joystick status (change image)
     def joystickEnabled(self, status):
