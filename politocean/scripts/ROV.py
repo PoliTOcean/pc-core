@@ -44,11 +44,12 @@ class ROV:
         self.sensors_sub = rospy.Subscriber("sensors", sensors_data, self.sensorsCallback)
         self.messages_sub = rospy.Subscriber("messages", String, self.messagesCallback)
         self.comp_sub = rospy.Subscriber("components", component_data, self.componentsCallback)
-        self.joystick_sub = rospy.Subscriber("joystick_axis",joystick_axis,self.armWidgetUpdate)
+        #self.joystick_sub = rospy.Subscriber("joystick_axis",joystick_axis,self.armWidgetUpdate)
         self.button_sub = rospy.Subscriber("joystick_buttons",joystick_buttons,self.armNipperUpdate)
 
         #commands publisher
         self.commands_pub = rospy.Publisher("commands", String, queue_size=3)
+        self.virtualJoystick = rospy.Publisher("joystick_buttons",joystick_buttons,queue_size = 0)
 
 
 
@@ -58,11 +59,11 @@ class ROV:
         if data.ID == 'd_butt':
             self.window.setArmNipper(1)
         
-    def armWidgetUpdate(self,data):
+    #def armWidgetUpdate(self,data):
         #reading a joystick msg for update robotics Arm widget
-        if data.ID == 'z':
-            state = data.status
-            self.window.setArmAxis(state)
+        #if data.ID == 'z':
+            #state = data.status
+            #self.window.setArmAxis(state)
 
 
     #callback function for components updates
@@ -106,6 +107,33 @@ class ROV:
         #get from "cameras" Topic and print on the video
         self.window.setCurrentFrame(index, img)
 
+    
+    def enable12Volt(self):
+        
+        button_command = joystick_buttons()
+        button_command.ID = "thumb2"
+        button_command.status = True
+        
+        self.virtualJoystick.publish(button_command)
+   
+        sleep(0.01)
+        
+        button_command.status = False
+        self.virtualJoystick.publish(button_command)
+    
+    def disable12Volt(self):
+        
+        button_command = joystick_buttons()
+        button_command.ID = "thumb"
+        button_command.status = True
+        
+        self.virtualJoystick.publish(button_command)
+        sleep(0.01)
+        
+        button_command.status = False
+        
+        self.virtualJoystick.publish(button_command)
+        
 
     #send command over the topic
     def sendCommand(self, comm):
