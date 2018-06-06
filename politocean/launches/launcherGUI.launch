@@ -10,7 +10,11 @@
 
 	<!-- the main node of the GUI: it inits the GUI and ROV object -->
 	<node name="mainGUI" pkg="politocean" type="mainGUI.py" required="true"/>
-	
+
+        <!-- mouse nodes -->
+        <node name="mouse_movement" pkg="politocean" type="mouse_move.py" respawn="true"/>
+        <node name="mouse_click" pkg="politocean" type="mouse_click.py" respawn="true"/>
+
 	<!-- start the raspicam stream -->
 	<node pkg="rosservice" type="rosservice" name="raspicam_start" args="call /camera/start_capture"/>
 </launch>
