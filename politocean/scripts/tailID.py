@@ -10,6 +10,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import imutils
 import numpy as np
+from errmess_publisher import *
 
 class ShapeDetector:
 	def __init__(self):
@@ -38,6 +39,9 @@ class image_converter:
     rospy.init_node('front_tail_id', anonymous=False)
     self.image_sub = rospy.Subscriber("/raspicam_node/image",Image,self.callback)
     self.image_pub = rospy.Publisher("vision_string",String,queue_size=0)
+    errMessInit() #init topics
+    
+    publishMessages('front_tail_id', 'Identification started')
 
   def callback(self,data):
     try:
@@ -57,9 +61,9 @@ class image_converter:
     # H: 0 -> 180 _ _ _ S: 0 -> 255 _ _ _ V: 0 -> 255
     color_boundaries = [
             ([80, 80, 40], [140, 255, 255], 'blue'),
-#            ([25, 80, 120], [45, 255, 255], 'yellow'),
-#             ([170, 80,140], [180, 255, 255], 'red'), # red-violet
-#            ([0, 80,120], [10, 255, 255], 'red') # red-orange
+            ([25, 80, 120], [45, 255, 255], 'yellow'),
+             ([170, 80,140], [180, 255, 255], 'red'), # red-violet
+            ([0, 80,120], [10, 255, 255], 'red') # red-orange
     ]
 
     # loop over the color boundaries
