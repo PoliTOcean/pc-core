@@ -81,6 +81,10 @@ class Window(QtGui.QMainWindow,form_class):
         self.stopBtn.clicked.connect(self.stop_clicked)
         self.sendBtn.clicked.connect(self.send_clicked)
         self.clearBtn.clicked.connect(self.initConsole)
+        self.recognize.clicked.connect(self.visionTailStart)        
+        self.recognize_2.clicked.connect(self.visionTailStop)        
+        self.recognize_3.clicked.connect(self.visionBackStart)        
+        self.recognize_4.clicked.connect(self.visionBackStop)        
         #set console read only
         self.console.setReadOnly(True)
 
@@ -157,7 +161,22 @@ class Window(QtGui.QMainWindow,form_class):
     #    if self.axis <= -1 and self.nipper == 1:
     #        self.label_5.setPixmap(self.stateArm[3].scaled(400, 100, QtCore.Qt.KeepAspectRatio) )
     #        self.label_5.show()
-
+    
+    
+    def visionTailStart(self):
+        os.system("rosrun politocean tailID.py &")
+    
+    def visionBackStart(self):
+        os.system("rosrun politocean back_tail_ID.py &")
+    
+    def visionTailStop(self):
+        os.system("rosnode kill /front_tail_id &")
+    
+    def visionBackStop(self):
+        os.system("rosnode kill /back_tail_id &")
+        
+    def setVisionString(self,string):
+        self.vision_string.setText(string)
 
     #set the ROV variable
     def setROV(self, rov):
@@ -207,6 +226,10 @@ class Window(QtGui.QMainWindow,form_class):
                 self.tab.setCurrentIndex(2) #select 3rd tab
             elif k == QtCore.Qt.Key_F4: #if it's F4
                 self.tab.setCurrentIndex(3) #select 4th tab                         #and cameras are running
+            elif k == QtCore.Qt.Key_R: #if it's R
+                self.visionTailStart() # start vision
+            elif k == QtCore.Qt.Key_T: #if it's R
+                self.visionTailStop() # start vision
             
         return QtGui.QWidget.eventFilter(self, widget, event)
 
@@ -223,15 +246,12 @@ class Window(QtGui.QMainWindow,form_class):
             self.messages.setText( self.messages.text()+' [M]' )
             self.errors.setText( self.errors.text()+' [E]' )
             self.commands.setText( self.commands.text()+' [X]' )
-            self.camRadio1.setText( '[1] '+self.camRadio1.text() )
-            self.camRadio2.setText( '[2] '+self.camRadio2.text() )
-            self.camRadio3.setText( '[3] '+self.camRadio3.text() )
             self.tab.setTabText(0,  self.tab.tabText(0)+' [F1]' )
             self.tab.setTabText(1,  self.tab.tabText(1)+' [F2]' )
             self.tab.setTabText(2,  self.tab.tabText(2)+' [F3]' )
             self.tab.setTabText(3,  self.tab.tabText(3)+' [F4]' )
             self.recognize.setText( self.recognize.text()+' [R]' )
-            self.showPlot.setText( self.showPlot.text()+' [P]' )
+            self.recognize_2.setText( self.recognize_2.text()+' [T]' )
         else:
             self.startVideoBtn.setText( self.startVideoBtn.text().replace(' [V]', '') )
             self.calibBtn.setText( self.calibBtn.text().replace(' [C]', '') )
@@ -242,16 +262,12 @@ class Window(QtGui.QMainWindow,form_class):
             self.messages.setText( self.messages.text().replace(' [M]', '') )
             self.errors.setText( self.errors.text().replace(' [E]', '') )
             self.commands.setText( self.commands.text().replace(' [X]', '') )
-            self.camRadio1.setText( self.camRadio1.text().replace('[1] ', '') )
-            self.camRadio2.setText( self.camRadio2.text().replace('[2] ', '') )
-            self.camRadio3.setText( self.camRadio3.text().replace('[3] ', '') )
             self.tab.setTabText(0, self.tab.tabText(0).replace(' [F1]', '') )
             self.tab.setTabText(1, self.tab.tabText(1).replace(' [F2]', '') )
             self.tab.setTabText(2, self.tab.tabText(2).replace(' [F3]', '') )
             self.tab.setTabText(3, self.tab.tabText(3).replace(' [F4]', '') )
             self.recognize.setText( self.recognize.text().replace(' [R]', '') )
-            self.showPlot.setText( self.showPlot.text().replace(' [P]', '') )
-
+            self.recognize_2.setText( self.recognize_2.text().replace(' [T]', '') )
 
     #start ROV function
     def start_clicked(self):

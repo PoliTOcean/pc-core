@@ -549,72 +549,255 @@
      <property name="title">
       <string/>
      </property>
-     <widget class="QLabel" name="label_5">
+     <widget class="QLCDNumber" name="depth">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>30</x>
+        <y>60</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="value" stdset="0">
+       <double>0.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>70</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Courier 10 Pitch</family>
+        <pointsize>24</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>m</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+     </widget>
+     <widget class="QLCDNumber" name="temp">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>180</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>180</y>
+        <width>21</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <italic>true</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="text">
+       <string>°</string>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="calibBtn">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>30</x>
         <y>110</y>
-        <width>261</width>
-        <height>111</height>
+        <width>81</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
-       <string>ROBOTIC ARM AREA</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <string>Calibrate</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_4">
+     <widget class="QLCDNumber" name="roll">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>40</y>
-        <width>67</width>
-        <height>17</height>
+        <x>30</x>
+        <y>230</y>
+        <width>121</width>
+        <height>31</height>
        </rect>
-      </property>
-      <property name="text">
-       <string>Roll:</string>
       </property>
      </widget>
-     <widget class="QLabel" name="pitch">
+     <widget class="QLCDNumber" name="pitch">
       <property name="geometry">
        <rect>
-        <x>90</x>
-        <y>40</y>
-        <width>67</width>
-        <height>17</height>
+        <x>30</x>
+        <y>270</y>
+        <width>121</width>
+        <height>31</height>
        </rect>
-      </property>
-      <property name="text">
-       <string>n.d.</string>
       </property>
      </widget>
-     <widget class="QLabel" name="roll">
+     <widget class="QLabel" name="label_10">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>40</y>
-        <width>67</width>
-        <height>17</height>
+        <x>160</x>
+        <y>230</y>
+        <width>21</width>
+        <height>21</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <italic>true</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
       <property name="text">
-       <string>n.d.</string>
+       <string>°</string>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>270</y>
+        <width>21</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <italic>true</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="text">
+       <string>°</string>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>40</y>
-        <width>67</width>
-        <height>17</height>
+        <x>210</x>
+        <y>70</y>
+        <width>111</width>
+        <height>31</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>22</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
       <property name="text">
-       <string>Pitch: </string>
+       <string>Depth</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>180</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>22</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Temperature</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>230</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>18</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Roll</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>270</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>18</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Pitch</string>
       </property>
      </widget>
     </widget>
@@ -622,9 +805,9 @@
      <property name="geometry">
       <rect>
        <x>1140</x>
-       <y>620</y>
+       <y>600</y>
        <width>141</width>
-       <height>17</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="frameShadow">
@@ -661,7 +844,7 @@
      <property name="geometry">
       <rect>
        <x>1150</x>
-       <y>640</y>
+       <y>620</y>
        <width>171</width>
        <height>17</height>
       </rect>
@@ -674,7 +857,7 @@
      <property name="geometry">
       <rect>
        <x>1150</x>
-       <y>660</y>
+       <y>640</y>
        <width>161</width>
        <height>17</height>
       </rect>
@@ -761,7 +944,7 @@
      <property name="geometry">
       <rect>
        <x>1130</x>
-       <y>660</y>
+       <y>640</y>
        <width>16</width>
        <height>17</height>
       </rect>
@@ -803,7 +986,7 @@
      <property name="geometry">
       <rect>
        <x>1130</x>
-       <y>640</y>
+       <y>620</y>
        <width>17</width>
        <height>16</height>
       </rect>
@@ -811,6 +994,240 @@
      <property name="text">
       <string/>
      </property>
+    </widget>
+    <widget class="QLabel" name="DriverStatus">
+     <property name="geometry">
+      <rect>
+       <x>1130</x>
+       <y>660</y>
+       <width>16</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>1150</x>
+       <y>660</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Driver Arm</string>
+     </property>
+    </widget>
+    <widget class="QTabWidget" name="tab">
+     <property name="geometry">
+      <rect>
+       <x>1380</x>
+       <y>140</y>
+       <width>431</width>
+       <height>341</height>
+      </rect>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab2">
+      <attribute name="title">
+       <string>Tail ID</string>
+      </attribute>
+      <widget class="QPushButton" name="recognize">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>160</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>START TAIL</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="vision_string">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>70</y>
+         <width>301</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+         <weight>75</weight>
+         <italic>true</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Not recognized yet.</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="recognize_2">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>230</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>STOP TAIL</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="recognize_3">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>160</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>START BACK</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="recognize_4">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>230</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>START BACK</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab3">
+      <attribute name="title">
+       <string>OBS</string>
+      </attribute>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>30</y>
+         <width>67</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Pitch:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>60</y>
+         <width>67</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Roll:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="OBSpitch">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>30</y>
+         <width>67</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>n.d.</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="OBSroll">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>60</y>
+         <width>67</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>n.d.</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="infoOBS">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>120</y>
+         <width>131</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Data not received</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_12">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>120</y>
+         <width>17</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="obsSTART">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>190</y>
+         <width>121</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>START</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="obsSTOP">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>190</y>
+         <width>121</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>STOP</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab4">
+      <attribute name="title">
+       <string>Energy</string>
+      </attribute>
+     </widget>
     </widget>
     <zorder>groupBox_2</zorder>
     <zorder>mainCam</zorder>
@@ -833,255 +1250,9 @@
     <zorder>cmdInput</zorder>
     <zorder>sendBtn</zorder>
     <zorder>joystickStatus</zorder>
-   </widget>
-   <widget class="QTabWidget" name="tab">
-    <property name="geometry">
-     <rect>
-      <x>1380</x>
-      <y>130</y>
-      <width>431</width>
-      <height>341</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="tab1">
-     <attribute name="title">
-      <string>Depth</string>
-     </attribute>
-     <widget class="QPushButton" name="calibBtn">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>200</x>
-        <y>130</y>
-        <width>161</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Calibrate</string>
-      </property>
-     </widget>
-     <widget class="QLCDNumber" name="depth">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>40</y>
-        <width>311</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="value" stdset="0">
-       <double>0.000000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>80</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Courier 10 Pitch</family>
-        <pointsize>24</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>m</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::RichText</enum>
-      </property>
-     </widget>
-     <widget class="QLCDNumber" name="temp">
-      <property name="geometry">
-       <rect>
-        <x>230</x>
-        <y>220</y>
-        <width>131</width>
-        <height>51</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_9">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>220</y>
-        <width>21</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-        <weight>75</weight>
-        <italic>true</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
-      <property name="text">
-       <string>°</string>
-      </property>
-      <property name="scaledContents">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab2">
-     <attribute name="title">
-      <string>Tail ID</string>
-     </attribute>
-     <widget class="QPushButton" name="recognize">
-      <property name="geometry">
-       <rect>
-        <x>90</x>
-        <y>150</y>
-        <width>151</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Recognize Tail</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_13">
-      <property name="geometry">
-       <rect>
-        <x>90</x>
-        <y>60</y>
-        <width>151</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Not recognized yet.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab3">
-     <attribute name="title">
-      <string>OBS</string>
-     </attribute>
-     <widget class="QLabel" name="label_2">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>30</y>
-        <width>67</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Pitch:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_8">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>60</y>
-        <width>67</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Roll:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="OBSpitch">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>30</y>
-        <width>67</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>n.d.</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="OBSroll">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>60</y>
-        <width>67</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>n.d.</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_11">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>120</y>
-        <width>131</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Data not received</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_12">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>120</y>
-        <width>17</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="showPlot">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>90</x>
-        <y>166</y>
-        <width>141</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Show the plot</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab4">
-     <attribute name="title">
-      <string>Energy</string>
-     </attribute>
-    </widget>
+    <zorder>DriverStatus</zorder>
+    <zorder>label_16</zorder>
+    <zorder>tab</zorder>
    </widget>
   </widget>
  </widget>

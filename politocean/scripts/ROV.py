@@ -44,6 +44,7 @@ class ROV:
         self.sensors_sub = rospy.Subscriber("sensors", sensors_data, self.sensorsCallback)
         self.messages_sub = rospy.Subscriber("messages", String, self.messagesCallback)
         self.comp_sub = rospy.Subscriber("components", component_data, self.componentsCallback)
+        self.vision_sub = rospy.Subscriber("vision_string",String, self.visionCallback )
         #self.joystick_sub = rospy.Subscriber("joystick_axis",joystick_axis,self.armWidgetUpdate)
         self.button_sub = rospy.Subscriber("joystick_buttons",joystick_buttons,self.armNipperUpdate)
 
@@ -68,7 +69,10 @@ class ROV:
         #if data.ID == 'z':
             #state = data.status
             #self.window.setArmAxis(state)
-
+    
+    
+    def visionCallback(self,data):
+        self.window.setVisionString(data.data)
 
     def componentsCallback(self, data):
         if data.status==STATUS.REQUEST: #if it's just a request
