@@ -27,7 +27,6 @@ class ROV:
         self.zeroPressure = 0
         self.received = False
         
-        
         #set "global" variables
         self.toCalibrate = False
         self.firstCalibrationDone = False
@@ -51,8 +50,6 @@ class ROV:
         #commands publisher
         self.commands_pub = rospy.Publisher("commands", String, queue_size=3)
         self.virtualJoystick = rospy.Publisher("joystick_buttons",joystick_buttons,queue_size = 0)
-
-
     
     def changeStatusDriver(self,data):
         self.window.emit
@@ -69,7 +66,6 @@ class ROV:
         #if data.ID == 'z':
             #state = data.status
             #self.window.setArmAxis(state)
-    
     
     def visionCallback(self,data):
         self.window.setVisionString(data.data)
@@ -95,7 +91,7 @@ class ROV:
         if self.toCalibrate: #if it has to be calibrated (calib command)
             self.calibrate(data.pressure, data.pitch, data.roll) #calibrate
         else: #if it's already been calibrated
-            depth = (data.pressure-self.zeroDepthPressure)/100 #calculate depth in meters
+            depth = (data.pressure-self.zeroDepthPressure)/10 #calculate depth in meters
         self.window.setSensorsValue(depth, data.pitch, data.roll,data.temperature) #update values of sensors on the gui
 
     #print messages on the console
@@ -117,7 +113,6 @@ class ROV:
         #get from "cameras" Topic and print on the video
         self.window.setCurrentFrame(index, img)
 
-    
     def enable12Volt(self):
         
         button_command = joystick_buttons()
@@ -143,7 +138,6 @@ class ROV:
         button_command.status = False
         
         self.virtualJoystick.publish(button_command)
-        
 
     #send command over the topic
     def sendCommand(self, comm):

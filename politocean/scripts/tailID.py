@@ -120,44 +120,55 @@ class image_converter:
 #            cv2.imshow("White matching", white_mask)
 #            cv2.imshow("Contourns", edges)
         
-            for c in hulls:
+            for c_col in color_hulls:
+                count = 0 # number of 
                 # compute the center of the contour, detect the name of the shape
-                M = cv2.moments(c)
+                M = cv2.moments(c_col)
                 cX = int((M["m10"] / M["m00"]) * ratio)
                 cY = int((M["m01"] / M["m00"]) * ratio)
-                shape = sd.detect(c)
+                shape_col = sd.detect(c_col)
                 
-                perimeter = cv2.arcLength(c,True)
+                perimeter = cv2.arcLength(c_col,True)
         
-                for c_col in color_hulls:
-                    M = cv2.moments(c_col)
+                for c in hulls:
+                    M = cv2.moments(c)
                     cXt = int((M["m10"] / M["m00"]) * ratio)
                     cYt = int((M["m01"] / M["m00"]) * ratio)
-                    shape_col = sd.detect(c_col)
+                    shape = sd.detect(c)
                     
                     # compute and check the distance between the centroids
                     distance = np.sqrt((cXt-cX)**2 + (cYt-cY)**2)/perimeter;
                     
                     # print(distance)
                     
-                    if (distance < 0.2 and (shape_col == "triangle" or shape_col == "rectangle") and shape == "rectangle"):     # check distance vs dimensions
-
+                    if (distance < 0.2 and (shape_col == "triangle" or shape_col == "rectangle") and
+                            shape == "rectangle"):     # check distance vs dimensions
+                        count += 1
+                        
                         # multiply the contour (x, y)-coordinates by the resize ratio,
                         # then draw the contours and the name of the shape on the image
-                        c_col = c_col.astype("float")
-                        c_col *= ratio
-                        c_col = c_col.astype("int")
-                        cv2.drawContours(cv_image, [c_col], -1, (0, 255, 0), 2)
-                        cv2.putText(cv_image, color + ' ' + shape_col, (cXt, cYt), cv2.FONT_HERSHEY_SIMPLEX,
-                                    0.5, (255, 255, 255), 2)
-
+#                        c_col = c_col.astype("float")
+#                        c_col *= ratio
+#                        c_col = c_col.astype("int")
+#                        cv2.drawContours(cv_image, [c_col], -1, (0, 255, 0), 2)
+#                        cv2.putText(cv_image, color + ' ' + shape_col, (cXt, cYt), cv2.FONT_HERSHEY_SIMPLEX,
+#                                    0.5, (255, 255, 255), 2)
 #                        cv2.imshow("Image window", cv_image)
 #                        cv2.waitKey(3)
-
-                        try:
-                                self.image_pub.publish(color + ' ' + shape_col)
-                        except CvBridgeError as e:
-                                print(e)
+                        
+                if count == 1 and shape_col == "triangle":
+                    try:
+                        self.image_pub.publish(color + ' triangle')
+                    except CvBridgeError as e:
+#                        print(e)
+                        pass
+                        
+                elif count == 2 and shape_col == "rectangle":
+                    try:
+                        self.image_pub.publish(color + ' rectangle')
+                    except CvBridgeError as e:
+#                        print(e)
+                        pass
 
 def main(args):
   ic = image_converter()
